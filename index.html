@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Filborna solur – interaktiv års- och dygnsmodell</title>
+<style>
+:root {color-scheme:light;--ink:#1e3444;--muted:#607587;--line:#dce6eb;--blue:#246b9a;--orange:#d37525;--red:#bd3f42;--teal:#0a8a83;--gold:#d9a133;--paper:#f5f8fa;--panel:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:#12384e;color:white;padding:21px clamp(16px,3vw,36px) 18px}header h1{font-size:clamp(21px,2.4vw,31px);font-weight:690;margin:0 0 4px;letter-spacing:-.025em}header p{margin:0;color:#d3e2e9;font-size:14px}main{max-width:1550px;margin:auto;padding:24px clamp(12px,2.5vw,30px) 40px}
+.layout{display:grid;grid-template-columns:minmax(310px,380px) minmax(0,1fr);gap:20px;align-items:start}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 3px 14px #193c5210;padding:20px}.panel h2{font-size:16px;margin:0 0 17px;letter-spacing:-.01em}label{display:block;font-size:13px;font-weight:650;margin-bottom:8px}.control{margin-bottom:21px}.control:last-child{margin-bottom:0}
+input[type=range]{width:100%;accent-color:#1d7291;cursor:pointer;height:25px}input[type=date],select{border:1px solid #bbced7;padding:10px 11px;border-radius:9px;background:white;color:var(--ink);font:inherit;min-width:0}.date-row{display:flex;gap:10px;align-items:center;justify-content:space-between}.date-row input{width:157px;max-width:53%}.hero-value{font-size:23px;font-weight:720;font-variant-numeric:tabular-nums;letter-spacing:-.025em}.subvalue{font-size:12px;color:var(--muted);min-height:19px}.range-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}.flex{display:flex;gap:9px;align-items:center;flex-wrap:wrap}button{cursor:pointer;border:1px solid #cad9df;border-radius:9px;background:white;padding:10px 12px;font:inherit;color:var(--ink);font-weight:600}button:hover{background:#edf5f7}button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid #83bfd7;outline-offset:2px}.primary{background:#116b84;color:white;border-color:#116b84}.primary:hover{background:#0e5369}.play{min-width:132px}.preset{font-size:12px;padding:8px 10px}.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}.checkgrid label{display:flex;gap:8px;align-items:center;font-weight:500;font-size:12px;margin:0;cursor:pointer}.checkgrid input{accent-color:#187d8e}
+.range-note{font-size:12px;color:var(--muted);margin-top:8px}.modelnote{background:#f3f7f9;border:1px solid #dce8ec;padding:11px 12px;border-radius:10px;color:#486271;font-size:12px;line-height:1.6;margin-top:17px}.modelnote strong{color:var(--ink)}
+.plot-panel{padding:13px 16px 16px}.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:6px 2px 10px}.topbar strong{font-size:18px}.topbar small{display:block;color:var(--muted);font-size:12px;margin-top:3px}.canvas{width:100%;display:block;background:#fff;border:1px solid #e6edf0;border-radius:10px;max-height:780px;aspect-ratio:1.18/1}.pill{display:inline-flex;border-radius:99px;background:#eaf4f5;color:#186a73;padding:4px 8px;font-weight:650;font-size:11px}.pill.night{background:#f4eef2;color:#915071}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin:14px 0 0}.stat{background:#f6f9fa;border:1px solid #e8edf0;border-radius:9px;padding:10px 11px}.stat-label{font-size:11px;color:var(--muted)}.stat-value{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}.legend{display:flex;flex-wrap:wrap;gap:9px 15px;margin:13px 2px 0;color:#506777;font-size:11px}.legend span{display:flex;align-items:center;gap:6px}.swatch{width:18px;height:3px;display:inline-block;border-radius:9px}.dot{height:9px;width:9px;border-radius:50%;display:inline-block}.footer{font-size:12px;line-height:1.65;color:#607584;margin-top:17px}.note{margin-top:16px;color:#667a87;font-size:12px}
+@media(max-width:920px){.layout{grid-template-columns:1fr}.controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 20px}.panel{padding:16px}.controls>h2{grid-column:1/-1}.modelnote{grid-column:1/-1}.checkgrid{grid-template-columns:1fr 1fr}.canvas{max-height:700px}}
+@media(max-width:570px){main{padding:12px}.controls{display:block}.stats{grid-template-columns:repeat(2,1fr)}.topbar strong{font-size:15px}.date-row input{width:142px}.panel{border-radius:12px}.canvas{aspect-ratio:1/1}.hero-value{font-size:22px}}
+</style>
+</head>
+<body>
+<header><h1>Filborna solur <span style="font-weight:400">/ interaktiv skuggmodell</span></h1><p>Års- och dygnsmodell · Helsingborg · svensk normaltid (CET, UTC+1) hela året</p></header>
+<main><div class="layout">
+<section class="panel controls" aria-label="Kontroller">
+<h2>Datum, tid och uppspelning</h2>
+<div class="control">
+<label for="mode">Visningsläge</label>
+<select id="mode" style="width:100%"><option value="free">Fritt läge – valfritt datum och tid</option><option value="day">Spela dagen – låst datum</option><option value="year">Spela året – låst klockslag</option></select>
+</div>
+<div class="control">
+<div class="date-row"><label for="dateRange">Datum <span class="subvalue">2026</span></label><input id="dateInput" type="date" min="2026-01-01" max="2026-12-31" value="2026-06-21" aria-label="Välj datum"></div>
+<div id="dateText" class="hero-value">21 juni 2026</div>
+<input type="range" id="dateRange" min="1" max="365" step="1" value="172" aria-label="Dag på året"><div class="range-labels"><span>1 jan</span><span>31 dec</span></div>
+<div id="zodiac" class="subvalue">Kräftan · stjärnteckenstart</div>
+</div>
+<div class="control">
+<label for="timeRange">Klockslag (alltid CET)</label>
+<div class="date-row"><span id="timeText" class="hero-value">12:00</span><span class="subvalue">Upplösning: 1 minut</span></div>
+<input id="timeRange" type="range" min="0" max="1439" step="1" value="720" aria-label="Tid på dygnet"><div class="range-labels"><span>00:00</span><span>12:00</span><span>23:59</span></div>
+</div>
+<div class="control">
+<div class="flex"><button id="prev" title="Ett steg bakåt" aria-label="Steg bakåt">◀</button><button id="play" class="primary play">▶ Spela</button><button id="next" title="Ett steg framåt" aria-label="Steg framåt">▶</button><select id="speed" aria-label="Uppspelningshastighet"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></div>
+<div class="range-note" id="playHint">Fritt läge: spelar tiden framåt, minut för minut.</div>
+</div>
+<div class="control"><label>Återskapa de tidigare animationerna</label><div class="flex"><button id="presetDay" class="preset">21 juni · kl 06–18</button><button id="presetZodiac" class="preset">12 stjärntecken · kl 12</button></div></div>
+<div class="control"><label>Visa på ritningen</label>
+<div class="checkgrid">
+<label><input id="showPillars" type="checkbox" checked>24 pelarskuggor</label>
+<label><input id="showRing" type="checkbox" checked>Skuggring</label>
+<label><input id="showDay" type="checkbox" checked>Dagens kurva (kl 6–18)</label>
+<label><input id="showYear" type="checkbox">Årsanalemma</label>
+<label><input id="showCurrent" type="checkbox" checked>Markerad pelare</label>
+<label><input id="showSun" type="checkbox" checked>Solriktning</label>
+</div></div>
+<div class="modelnote"><strong>Modellantaganden</strong><br>Tornringens radie: 45 m<br>Källpunkternas radie: 42,25 m<br>Höjd till ringens underkant: 25 m<br>Mark: horisontell<br>24 pelare · parallellprojektion ovanifrån<br><strong>Viktigt:</strong> Pelarnas källpunkter och höjden är ännu inte verifierade mot inmätningar.</div>
+</section>
+<section class="panel plot-panel">
+<div class="topbar"><div><strong id="plotTitle">21 juni 2026 · kl. 12:00 CET</strong><small>Skala i meter · norr uppåt · ingen perspektivförminskning</small></div><span class="pill" id="daylight">Solen över horisonten</span></div>
+<svg id="plot" class="canvas" viewBox="0 0 820 700" role="img" aria-label="Ortografisk planritning av vattentornets ring och beräknade skuggor"></svg>
+<div class="stats"><div class="stat"><div class="stat-label">Solazimut (från norr)</div><div id="azStat" class="stat-value">—</div></div><div class="stat"><div class="stat-label">Solhöjd</div><div id="altStat" class="stat-value">—</div></div><div class="stat"><div class="stat-label">Skuggförskjutning</div><div id="lenStat" class="stat-value">—</div></div><div class="stat"><div class="stat-label">Vald timpelare</div><div id="pillarStat" class="stat-value">12</div></div></div>
+<div class="legend"><span><i class="swatch" style="background:#246b9a"></i>Tornring</span><span><i class="swatch" style="background:#d37525;border-top:2px dashed white"></i>Skuggring</span><span><i class="swatch" style="background:#a4b3bc"></i>Pelarskuggor</span><span><i class="swatch" style="background:#bd3f42"></i>Vald pelare/skugga</span><span><i class="swatch" style="background:#0a8a83"></i>Kurvor</span><span><i class="swatch" style="background:#d9a133"></i>Mot solen</span></div>
+<div id="status" class="note"></div>
+</section></div>
+<div class="footer">Beräkningsprincip: solens geometriska position enligt en Meeus/NOAA-baserad approximation. För en höjd <em>H</em> och solhöjd <em>α</em> är skuggförskjutningen <em>H / tan(α)</em>, i motsatt riktning mot solens azimut. Ringens projicerade skugga är en cirkel med <strong>exakt samma diameter</strong> som tornringen. Vid solhöjd 0° eller lägre ritas inga markskuggor. Vid låg solhöjd kan skuggorna falla utanför ritningsytan. Denna modell visar inte takets skuggade ytor, pelarnas bredd eller lutande mark.</div>
+</main>
+<script>
+(function(){'use strict';
+const $=id=>document.getElementById(id), svg=$('plot'), NS='http://www.w3.org/2000/svg';
+const zodiacs=[['Vattumannen','01-20'],['Fiskarna','02-19'],['Väduren','03-21'],['Oxen','04-20'],['Tvillingarna','05-21'],['Kräftan','06-21'],['Lejonet','07-23'],['Jungfrun','08-23'],['Vågen','09-23'],['Skorpionen','10-23'],['Skytten','11-22'],['Stenbocken','12-21']];
+const year=2026,R=45,rSource=42.25,H=25,lat=56.0465,lon=12.6945;
+const rad=Math.PI/180, deg=180/Math.PI;
+const state={day:172,min:720,mode:'free',play:false,speed:1,preset:'',last:0,carry:0};
+const start=Date.UTC(year,0,1), dayLength=365;
+const fmt=n=>String(n).padStart(2,'0');
+const dateOf=d=>new Date(start+(d-1)*86400000);
+const dayFromDate=s=>Math.max(1,Math.min(365,Math.floor((Date.parse(s+'T00:00:00Z')-start)/86400000)+1));
+const dateISO=d=>dateOf(d).toISOString().slice(0,10);
+const monthNames=['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
+const prettyDate=d=>{let dt=dateOf(d);return `${dt.getUTCDate()} ${monthNames[dt.getUTCMonth()]} ${year}`;};
+const timeString=m=>fmt(Math.floor(m/60))+':'+fmt(m%60);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const norm=a=>(a%360+360)%360;
+function solar(day,min){
+  // Convert fixed CET to UTC, even during Nordic daylight saving months.
+  const epoch=start+(day-1)*86400000+(min-60)*60000;
+  const date=new Date(epoch),jd=epoch/86400000+2440587.5,T=(jd-2451545)/36525;
+  let L0=norm(280.46646+T*(36000.76983+T*0.0003032));
+  let M=norm(357.52911+T*(35999.05029-0.0001537*T));
+  let e=0.016708634-T*(0.000042037+0.0000001267*T);
+  let C=Math.sin(M*rad)*(1.914602-T*(0.004817+0.000014*T))+Math.sin(2*M*rad)*(0.019993-0.000101*T)+Math.sin(3*M*rad)*0.000289;
+  let trueLong=L0+C,omega=125.04-1934.136*T,lambda=trueLong-0.00569-0.00478*Math.sin(omega*rad);
+  let eps0=23+(26+((21.448-T*(46.815+T*(0.00059-T*0.001813)))/60))/60;
+  let eps=eps0+0.00256*Math.cos(omega*rad);
+  let dec=Math.asin(Math.sin(eps*rad)*Math.sin(lambda*rad));
+  let y=Math.tan(eps*rad/2)**2;
+  let eq=4*deg*(y*Math.sin(2*L0*rad)-2*e*Math.sin(M*rad)+4*e*y*Math.sin(M*rad)*Math.cos(2*L0*rad)-0.5*y*y*Math.sin(4*L0*rad)-1.25*e*e*Math.sin(2*M*rad));
+  let utcMin=date.getUTCHours()*60+date.getUTCMinutes()+date.getUTCSeconds()/60;
+  let tst=((utcMin+eq+4*lon)%1440+1440)%1440;
+  let ha=(tst/4-180)*rad,p=lat*rad;
+  let sinAlt=Math.sin(p)*Math.sin(dec)+Math.cos(p)*Math.cos(dec)*Math.cos(ha);
+  let alt=Math.asin(clamp(sinAlt,-1,1))*deg;
+  let az=norm(Math.atan2(Math.sin(ha),Math.cos(ha)*Math.sin(p)-Math.tan(dec)*Math.cos(p))*deg+180);
+  return {az,alt};
+}
+function shadow(day,min){let s=solar(day,min);if(s.alt<=0)return {...s,visible:false,dx:0,dy:0,d:Infinity};let d=H/Math.tan(s.alt*rad);return {...s,visible:true,d,dx:-d*Math.sin(s.az*rad),dy:-d*Math.cos(s.az*rad)};}
+function foot(hour){let a=(hour%24)*15*rad;return {x:rSource*Math.sin(a),y:rSource*Math.cos(a)};}
+function nearestPillar(){let h=Math.round(state.min/60);return h===0?24:h>24?24:h;}
+const view={cx:410,cy:357,scale:4.4}; // 1 meter = 4.4 SVG units; ortografisk planvy
+function X(x){return view.cx+x*view.scale;}
+function Y(y){return view.cy-y*view.scale;}
+function node(name,atts,parent=svg,content){let e=document.createElementNS(NS,name);for(let k in atts)e.setAttribute(k,atts[k]);if(content!==undefined)e.textContent=content;parent.appendChild(e);return e;}
+function line(x1,y1,x2,y2,attrs={},parent=svg){return node('line',{x1:X(x1),y1:Y(y1),x2:X(x2),y2:Y(y2),...attrs},parent);}
+function circle(x,y,r,attrs={},parent=svg){return node('circle',{cx:X(x),cy:Y(y),r:r*view.scale,...attrs},parent);}
+function text(x,y,value,attrs={},parent=svg){return node('text',{x:X(x),y:Y(y),...attrs},parent,value);}
+function polyPath(points,attrs={},parent=svg){if(points.length<2)return;let d=points.map((p,i)=>(i?'L':'M')+X(p.x).toFixed(2)+','+Y(p.y).toFixed(2)).join(' ');return node('path',{d,fill:'none',...attrs},parent);}
+const palette={blue:'#246b9a',orange:'#d37525',gray:'#a4b3bc',red:'#bd3f42',teal:'#0a8a83',gold:'#d9a133'};
+function annualPoints(min,pillar){let out=[];for(let day=1;day<=365;day+=2){let sh=shadow(day,min),f=foot(pillar);if(sh.alt>5 && sh.d<350)out.push({x:f.x+sh.dx,y:f.y+sh.dy});else if(out.length)out.push(null);}return out;}
+function dailyPoints(day){let out=[];for(let hour=6;hour<=18;hour++){let sh=shadow(day,hour*60),f=foot(hour);if(sh.alt>5 && sh.d<350)out.push({x:f.x+sh.dx,y:f.y+sh.dy});else out.push(null);}return out;}
+function segmented(points,attrs,parent){let part=[];for(let p of [...points,null]){if(p){part.push(p)}else{polyPath(part,attrs,parent);part=[];}}}
+function render(){
+  $('dateRange').value=state.day;$('dateInput').value=dateISO(state.day);$('dateText').textContent=prettyDate(state.day);
+  $('timeRange').value=state.min;$('timeText').textContent=timeString(state.min);$('mode').value=state.mode;
+  $('plotTitle').textContent=`${prettyDate(state.day)} · kl. ${timeString(state.min)} CET`;
+  let currentDate=dateISO(state.day).slice(5),which=zodiacs.find(x=>x[1]===currentDate);
+  $('zodiac').textContent=which?which[0]+' · stjärntecknets startdatum':'Dag '+state.day+' av 365';
+  let sh=shadow(state.day,state.min),pillar=nearestPillar();
+  $('azStat').textContent=sh.az.toFixed(1).replace('.',',')+'°';$('altStat').textContent=sh.alt.toFixed(1).replace('.',',')+'°';
+  $('lenStat').textContent=sh.visible?sh.d.toFixed(1).replace('.',',')+' m':'—';$('pillarStat').textContent=pillar;
+  let daystatus=$('daylight');daystatus.textContent=sh.visible?'Solen över horisonten':'Solen under horisonten';daystatus.className='pill'+(sh.visible?'':' night');
+  $('play').textContent=state.play?'Ⅱ Pausa':'▶ Spela';
+  $('playHint').textContent=state.preset==='zodiac'?'Spelar de 12 stjärntecknens startdatum vid kl. 12 CET.':state.preset==='solstice'?'Spelar 21 juni från kl. 06 till 18 CET.':state.mode==='year'?'Datum ändras, tiden är fast.':state.mode==='day'?'Tiden ändras, datumet är fast.':'Fritt läge: spela tiden framåt, minut för minut.';
+  svg.replaceChildren();
+  let defs=node('defs',{});let marker=node('marker',{id:'arrowhead',markerWidth:7,markerHeight:7,refX:6,refY:3.5,orient:'auto'},defs);node('path',{d:'M0,0 L7,3.5 L0,7 Z',fill:palette.gold},marker);
+  // Plot grid with physical 20m spacing
+  for(let v=-160;v<=160;v+=20){let major=v===0;line(v,-150,v,150,{stroke:major?'#c4d2da':'#ecf1f4','stroke-width':major?1.3:.8});line(-180,v,180,v,{stroke:major?'#c4d2da':'#ecf1f4','stroke-width':major?1.3:.8});}
+  // scale bar
+  line(-77,-71,-57,-71,{stroke:'#334c5d','stroke-width':2});line(-77,-73,-77,-69,{stroke:'#334c5d','stroke-width':2});line(-57,-73,-57,-69,{stroke:'#334c5d','stroke-width':2});text(-67,-76,'20 m',{'font-size':12,'text-anchor':'middle',fill:'#546e7f'});
+  // north arrow
+  text(0,69,'N',{'text-anchor':'middle','font-weight':700,'font-size':17,fill:'#243d4d'});
+  line(0,59,0,65,{stroke:'#293f4d','stroke-width':2});node('path',{d:`M ${X(0)-5},${Y(65)+7} L ${X(0)},${Y(70)} L ${X(0)+5},${Y(65)+7}`,fill:'none',stroke:'#293f4d','stroke-width':2});
+  // shadow geometry
+  if(sh.visible){
+    if($('showPillars').checked){for(let h=1;h<=24;h++){let f=foot(h);line(f.x,f.y,f.x+sh.dx,f.y+sh.dy,{stroke:palette.gray,'stroke-width':1.8,opacity:.88});}}
+    if($('showRing').checked)circle(sh.dx,sh.dy,R,{fill:'none',stroke:palette.orange,'stroke-width':3,'stroke-dasharray':'10 7'});
+  }
+  // ring and pillar positions
+  circle(0,0,R,{fill:'none',stroke:palette.blue,'stroke-width':3.5});
+  for(let h=1;h<=24;h++){let a=h*15*rad;let x=R*Math.sin(a),y=R*Math.cos(a);circle(x,y,1.25,{fill:palette.blue});text(54*Math.sin(a),54*Math.cos(a)+1.3,''+h,{'text-anchor':'middle','font-size':12,'dominant-baseline':'middle',fill:h===pillar?palette.red:'#405b6c','font-weight':h===pillar?700:400});}
+  // precomputed trajectories projected into exactly the same world coordinates
+  if($('showDay').checked){segmented(dailyPoints(state.day),{stroke:palette.teal,'stroke-width':2.6,opacity:.84},svg);}
+  if($('showYear').checked){segmented(annualPoints(state.min,pillar),{stroke:'#7844a1','stroke-width':2.8,opacity:.85},svg);
+    for(let [name,md] of zodiacs){let day=dayFromDate(`${year}-${md}`),s=shadow(day,state.min);if(s.alt>5&&s.d<350){let f=foot(pillar);circle(f.x+s.dx,f.y+s.dy,1.2,{fill:'#7844a1',stroke:'white','stroke-width':1});}}}
+  if(sh.visible&&$('showCurrent').checked){let f=foot(pillar);line(f.x,f.y,f.x+sh.dx,f.y+sh.dy,{stroke:palette.red,'stroke-width':4});circle(f.x,f.y,2.1,{fill:palette.red,stroke:'white','stroke-width':1.2});circle(f.x+sh.dx,f.y+sh.dy,2.1,{fill:palette.red,stroke:'white','stroke-width':1.5});}
+  if(sh.visible&&$('showSun').checked){let a=sh.az*rad, x=30*Math.sin(a),y=30*Math.cos(a);line(0,0,x,y,{stroke:palette.gold,'stroke-width':3,'marker-end':'url(#arrowhead)'});}
+  circle(0,0,.7,{fill:'#203c4c'});
+  $('status').textContent=sh.visible?`Skuggförskjutning: ${(sh.dx).toFixed(1).replace('.',',')} m österut, ${(sh.dy).toFixed(1).replace('.',',')} m norrut (negativa värden betyder västerut respektive söderut).`:'Ingen geometrisk markskugga ritas när solen ligger under horisonten.';
+}
+function stop(){state.play=false;state.last=0;state.carry=0;render();}
+function setDate(d){state.day=clamp(d,1,365);if(state.preset==='zodiac')state.preset='';stop();}
+function setTime(m){state.min=clamp(m,0,1439);if(state.preset==='solstice')state.preset='';stop();}
+$('dateRange').addEventListener('input',e=>setDate(Number(e.target.value)));
+$('dateInput').addEventListener('change',e=>{if(e.target.value.startsWith(year+'-'))setDate(dayFromDate(e.target.value));else render();});
+$('timeRange').addEventListener('input',e=>setTime(Number(e.target.value)));
+$('mode').addEventListener('change',e=>{state.mode=e.target.value;state.preset='';stop();});
+$('speed').addEventListener('change',e=>{state.speed=Number(e.target.value);});
+for(let id of ['showPillars','showRing','showDay','showYear','showCurrent','showSun'])$(id).addEventListener('change',render);
+const zodiacDays=zodiacs.map(z=>dayFromDate(`${year}-${z[1]}`));
+function step(direction){
+ if(state.preset==='zodiac'){let idx=zodiacDays.indexOf(state.day);if(idx<0)idx=0;state.day=zodiacDays[(idx+direction+12)%12];}
+ else if(state.mode==='year'){state.day=((state.day-1+direction+365)%365)+1;}
+ else if(state.preset==='solstice'){state.min=clamp(state.min+direction*60,360,1080);}
+ else {state.min=((state.min+direction*60)%1440+1440)%1440;}
+ render();
+}
+$('prev').addEventListener('click',()=>{stop();step(-1);});$('next').addEventListener('click',()=>{stop();step(1);});
+$('presetDay').addEventListener('click',()=>{state.day=dayFromDate('2026-06-21');state.min=360;state.mode='day';state.preset='solstice';stop();});
+$('presetZodiac').addEventListener('click',()=>{state.day=zodiacDays[0];state.min=720;state.mode='year';state.preset='zodiac';$('showYear').checked=true;stop();});
+$('play').addEventListener('click',()=>{state.play=!state.play;state.last=0;state.carry=0;render();if(state.play)requestAnimationFrame(tick);});
+function tick(ts){if(!state.play)return;if(!state.last)state.last=ts;let elapsed=Math.min(100,ts-state.last);state.last=ts;
+  // min/date increment using a stable fixed step instead of accumulating huge frames
+  let msPerStep=state.preset==='zodiac'?950:state.mode==='year'?90:35;
+  state.carry+=elapsed*state.speed;
+  let n=Math.floor(state.carry/msPerStep);state.carry-=n*msPerStep;
+  if(n){n=Math.min(n,50);for(let j=0;j<n;j++){
+    if(state.preset==='zodiac'){let idx=zodiacDays.indexOf(state.day);state.day=zodiacDays[(idx+1)%12];}
+    else if(state.mode==='year'){state.day=state.day%365+1;}
+    else if(state.preset==='solstice'){state.min+=1;if(state.min>1080)state.min=360;}
+    else{state.min=(state.min+1)%1440;}
+  }render();}
+  requestAnimationFrame(tick);
+}
+render();
+// Expose diagnostic only for local browser verification, no network required.
+window.filbornaModel={solar,shadow,state};
+})();
+</script>
+</body></html>
