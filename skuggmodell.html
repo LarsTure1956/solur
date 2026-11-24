@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Filborna solur – responsiv CET/AST-modell</title>
+<style>
+:root{color-scheme:light;--ink:#1e3444;--muted:#607587;--line:#dce6eb;--blue:#246b9a;--orange:#d37525;--red:#bd3f42;--teal:#0a8a83;--gold:#d9a133;--paper:#f5f8fa;--panel:#fff;--soft:#f3f7f9}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+header{background:#12384e;color:#fff;padding:16px clamp(14px,3vw,30px) 14px}
+header h1{font-size:clamp(20px,2.7vw,29px);font-weight:700;margin:0 0 3px;letter-spacing:-.02em}
+header p{margin:0;color:#d3e2e9;font-size:13px}
+main{max-width:1280px;margin:auto;padding:12px clamp(10px,2vw,20px) 26px;display:grid;gap:12px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;box-shadow:0 3px 14px #193c5210}
+.plot-panel{padding:12px 12px 14px}
+.topbar{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:4px 2px 10px}
+.topbar strong{font-size:18px;display:block}
+.topbar small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.canvas{width:100%;display:block;background:#fff;border:1px solid #e6edf0;border-radius:10px;max-height:78vh;aspect-ratio:1.18/1}
+.pill{display:inline-flex;border-radius:999px;background:#eaf4f5;color:#186a73;padding:4px 8px;font-weight:650;font-size:11px;white-space:nowrap}
+.pill.night{background:#f4eef2;color:#915071}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0 0}
+.stat{background:#f6f9fa;border:1px solid #e8edf0;border-radius:10px;padding:9px 10px}
+.stat-label{font-size:11px;color:var(--muted)}
+.stat-value{font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin:12px 2px 0;color:#506777;font-size:11px}
+.legend span{display:flex;align-items:center;gap:6px}.swatch{width:18px;height:7px;display:inline-block;border-radius:999px}.dot{height:10px;width:10px;border-radius:50%;display:inline-block}
+.note{margin-top:12px;color:#667a87;font-size:12px}
+.controls-panel{padding:10px;display:grid;gap:8px}
+.top-controls{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.play-row{display:grid;grid-template-columns:auto auto auto auto;gap:6px;align-items:center;justify-content:start}
+.control{display:grid;gap:7px}
+.control label,.control-title{font-size:13px;font-weight:650}
+.hero-line{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.hero-value{font-size:22px;font-weight:720;font-variant-numeric:tabular-nums;letter-spacing:-.025em}
+.subvalue{font-size:12px;color:var(--muted);min-height:17px}
+input[type=range]{width:100%;accent-color:#1d7291;cursor:pointer;height:28px;margin:0}
+input[type=date],select{border:1px solid #bbced7;padding:10px 11px;border-radius:9px;background:white;color:var(--ink);font:inherit;min-width:0;width:100%}
+.range-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}
+.flex{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button{cursor:pointer;border:1px solid #cad9df;border-radius:10px;background:white;padding:10px 12px;font:inherit;color:var(--ink);font-weight:600}
+button:hover{background:#edf5f7}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid #83bfd7;outline-offset:2px}.primary{background:#116b84;color:white;border-color:#116b84}.primary:hover{background:#0e5369}.play{min-width:126px}
+.toggle{display:inline-grid;grid-template-columns:1fr 1fr;background:#edf4f7;border:1px solid #c8d8df;border-radius:12px;padding:4px;gap:4px;max-width:260px}
+.toggle button{margin:0;border:none;background:transparent;padding:9px 12px;border-radius:9px}
+.toggle button.active{background:#116b84;color:white;box-shadow:0 1px 2px #00000014}
+.quick-grid{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end}
+.quick-grid .date-input-wrap{min-width:138px}
+details.panel{padding:0;overflow:hidden}
+details>summary{list-style:none;cursor:pointer;padding:14px 16px;font-weight:700}
+details>summary::-webkit-details-marker{display:none}
+details[open]>summary{border-bottom:1px solid var(--line);background:#fafcfd}
+.details-body{padding:14px 16px}
+.checkgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px 12px}.checkgrid label{display:flex;gap:8px;align-items:center;font-weight:500;font-size:12px;margin:0;cursor:pointer}.checkgrid input{accent-color:#187d8e}
+.small{font-size:12px;color:#607584;line-height:1.65;margin:0}
+.footer{font-size:12px;line-height:1.65;color:#607584;margin-top:2px}
+@media (min-width:960px){main{grid-template-columns:minmax(0,1fr) 360px;align-items:start}.plot-panel{grid-column:1}.controls-panel{grid-column:2;position:sticky;top:12px}.wide{grid-column:1/-1}}
+@media (max-width:959px){.controls-panel{position:sticky;bottom:8px;z-index:20;background:color-mix(in srgb,var(--panel) 96%,white)}main{padding-bottom:22px}.wide{grid-column:auto}.canvas{max-height:62vh}}
+@media (max-width:640px){header{padding:12px 14px}main{padding:10px 10px 18px}.plot-panel,.controls-panel{border-radius:12px}.topbar strong{font-size:15px}.stats{grid-template-columns:repeat(2,1fr)}.hero-value{font-size:18px}.quick-grid{grid-template-columns:1fr auto;gap:8px}.quick-grid .date-input-wrap{min-width:116px}.checkgrid{grid-template-columns:1fr 1fr}.legend{display:none}.canvas{aspect-ratio:1/1}.controls-panel{padding:8px;gap:7px;max-height:min(30vh,150px);overflow-y:auto;scrollbar-width:thin}.toggle{max-width:none}.subvalue.compact,#zodiac{display:none}.control{gap:4px}.control label,.control-title{font-size:12px}.range-labels{font-size:11px}.top-controls{grid-template-columns:1fr auto;gap:8px}.play-row{grid-template-columns:auto 1fr auto auto;gap:6px}.play{min-width:auto;padding:8px 10px}button{padding:8px 10px}input[type=date],select{padding:8px 9px}}
+
+/* Responsive layout v2: plot first, controls directly below on small screens. */
+.plot-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+.toggle{max-width:none;padding:2px;border-radius:9px}
+.toggle button{padding:7px 12px;border-radius:7px;font-size:13px}
+.control-heading{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.control-heading label{margin:0}
+.controls-panel{position:static!important;max-height:none!important;overflow:visible!important;gap:9px;padding:12px}
+.settings-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:15px}
+.topbar{align-items:center}
+@media(min-width:960px){
+ main{grid-template-columns:minmax(0,1fr) minmax(270px,340px);gap:14px}
+ .plot-panel{grid-column:1;grid-row:1/3}
+ .controls-panel{grid-column:2;grid-row:1;align-self:start}
+ details.wide{grid-column:2}
+ .canvas{max-height:76vh}
+ .controls-panel .play-row{grid-template-columns:auto minmax(85px,1fr) auto auto;justify-content:stretch}
+}
+@media(max-width:959px){
+ main{display:flex;flex-direction:column;gap:8px}
+ .plot-panel{order:1}
+ .controls-panel{order:2;position:static!important;bottom:auto!important;z-index:auto;background:#fff}
+ details.panel{order:3}
+ .canvas{max-height:none;aspect-ratio:820/700}
+ .plot-panel{padding:8px}
+ .stats,.legend,.note{display:none}
+}
+@media(max-width:640px){
+ header{padding:9px 12px}header h1{font-size:19px}header p{font-size:11px}
+ main{padding:6px 6px 20px;gap:6px}
+ .plot-panel{padding:5px}
+ .topbar{padding:4px 4px 6px;gap:5px;align-items:center}
+ .topbar strong{font-size:13px}.topbar small{display:none}
+ .plot-actions{gap:4px}
+ .toggle button{padding:6px 9px;font-size:12px}
+ .pill{display:none}
+ .canvas{aspect-ratio:820/700;border-radius:5px}
+ .controls-panel{padding:7px 9px;gap:5px}
+ .control{gap:1px}
+ .control-heading label{font-size:12px}
+ .hero-value{font-size:15px}
+ .quick-grid{display:block}
+ .range-labels{font-size:10px;line-height:1.1}
+ input[type=range]{height:20px;touch-action:pan-x}
+ .controls-panel .play-row{display:flex;justify-content:center;gap:6px}
+ .controls-panel .play-row button{padding:5px 12px;font-size:13px;min-height:29px}
+ .controls-panel .play-row .play{min-width:100px}
+ .controls-panel .play-row select{padding:4px 6px;font-size:12px}
+ .settings-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Filborna solur <span style="font-weight:400">/ interaktiv skuggmodell</span></h1>
+  <p>Interaktiv års- och dygnsmodell · CET och sann soltid (AST)</p>
+</header>
+<main>
+  <section class="panel plot-panel">
+    <div class="topbar">
+      <div>
+        <strong id="plotTitle">21 juni 2026 · kl. 12:00 CET</strong>
+        <small id="plotSub">Skala i meter · norr uppåt · ingen perspektivförminskning</small>
+      </div>
+      <div class="plot-actions">
+        <div class="toggle" role="group" aria-label="Välj tidssystem">
+          <button type="button" id="btnCET" class="active" aria-pressed="true">CET</button>
+          <button type="button" id="btnAST" aria-pressed="false">AST</button>
+        </div>
+        <span class="pill" id="daylight">Solen över horisonten</span>
+      </div>
+    </div>
+    <svg id="plot" class="canvas" viewBox="0 0 820 700" role="img" aria-label="Ortografisk planritning av vattentornets ring och beräknade skuggor"></svg>
+    <div class="stats">
+      <div class="stat"><div class="stat-label">Solazimut</div><div id="azStat" class="stat-value">—</div></div>
+      <div class="stat"><div class="stat-label">Solhöjd</div><div id="altStat" class="stat-value">—</div></div>
+      <div class="stat"><div class="stat-label">Skuggförskjutning</div><div id="lenStat" class="stat-value">—</div></div>
+      <div class="stat"><div class="stat-label">Vald timpelare</div><div id="pillarStat" class="stat-value">12</div></div>
+    </div>
+    <div class="legend">
+      <span><i class="swatch" style="background:#246b9a"></i>Tornets ring</span>
+      <span><i class="swatch" style="background:#d37525"></i>Ringens skugga</span>
+      <span><i class="swatch" style="background:#a4b3bc"></i>Pelarskuggor</span>
+      <span><i class="swatch" style="background:#bd3f42"></i>Vald pelare/skugga</span>
+      <span><i class="swatch" style="background:#0a8a83"></i>Dagens kurva</span>
+      <span><i class="dot" style="background:#e11d36"></i>Röd punkt</span>
+    </div>
+    <div id="status" class="note"></div>
+  </section>
+
+  <section class="panel controls-panel" aria-label="Snabbreglage">
+    <div class="control">
+      <div class="quick-grid">
+        <div>
+          <div class="control-heading"><label for="dateRange">Datum</label><span id="dateText" class="hero-value">21 juni 2026</span></div>
+          <div id="zodiac" class="subvalue">Kräftan · stjärntecknets startdatum</div>
+        </div>
+
+      </div>
+      <input type="range" id="dateRange" min="1" max="365" step="1" value="172" aria-label="Dag på året">
+      <div class="range-labels"><span>1 jan</span><span>31 dec</span></div>
+    </div>
+
+    <div class="control">
+      <div class="control-heading"><label for="timeRange" id="timeLabel">Klockslag (CET)</label><span id="timeText" class="hero-value">12:00</span></div>
+      <span id="timeSub" class="subvalue compact">Motsvarar 11:52 AST</span>
+      <input id="timeRange" type="range" min="0" max="1439" step="1" value="720" aria-label="Tid på dygnet">
+      <div class="range-labels"><span>00:00</span><span>12:00</span><span>23:59</span></div>
+    </div>
+
+    <div class="control">
+      <div class="play-row">
+        <button id="prev" title="Ett steg bakåt" aria-label="Steg bakåt">◀</button>
+        <button id="play" class="primary play">▶ Spela</button>
+        <button id="next" title="Ett steg framåt" aria-label="Steg framåt">▶</button>
+        <select id="speed" aria-label="Uppspelningshastighet" style="width:auto"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+      </div>
+
+    </div>
+  </section>
+
+  <details class="panel wide">
+    <summary>Fler inställningar</summary>
+    <div class="details-body">
+      <div class="subvalue" id="playHint" style="margin-bottom:12px">Fritt läge: spelar tiden framåt, minut för minut.</div>
+      <div class="settings-row">
+        <div class="control"><label for="mode">Uppspelningsläge</label><select id="mode"><option value="free">Fritt – ändra datum och tid</option><option value="day">Spela dagen</option><option value="year">Spela året</option></select></div>
+        <div class="control"><label for="dateInput">Välj datum direkt</label><input id="dateInput" type="date" min="2026-01-01" max="2026-12-31" value="2026-06-21"></div>
+      </div>
+      <div class="control" style="margin-bottom:14px">
+        <div class="control-title">Snabbval</div>
+        <div class="flex"><button id="presetDay">21 juni · kl 06–18</button><button id="presetZodiac">12 stjärntecken · kl 12</button></div>
+      </div>
+      <div class="control" style="margin-bottom:0">
+        <div class="control-title">Visa på ritningen</div>
+        <div class="checkgrid">
+          <label><input id="showPillars" type="checkbox" checked>24 pelarskuggor</label>
+          <label><input id="showRing" type="checkbox" checked>Ringens skugga</label>
+          <label><input id="showDay" type="checkbox" checked>Dagens kurva</label>
+          <label><input id="showYear" type="checkbox">Årsanalemma</label>
+          <label><input id="showCurrent" type="checkbox" checked>Markerad pelare</label>
+          <label><input id="showRingPoint" type="checkbox" checked>Röd punkt på kurvan</label>
+          <label><input id="showSun" type="checkbox" checked>Solriktning</label>
+        </div>
+      </div>
+    </div>
+  </details>
+
+  <details class="panel wide">
+    <summary>Förklaring och modellantaganden</summary>
+    <div class="details-body">
+      <p class="small">Ytterradius: 45 m · innerradius: 39,5 m · pelare: 1,10 m breda och 5,50 m djupa. Pelarskugga projiceras från marknivå till 30 m höjd. Ringens skugga projiceras mellan 30 och 42 m höjd. Marken antas horisontell och vyn är en parallellprojektion ovanifrån.</p>
+      <p class="small">I <strong>CET</strong> används svensk normaltid året runt (UTC+1). I <strong>AST</strong> används sann soltid, där kl. 12:00 motsvarar solens meridianpassage. Den gröna kurvan visar heldygnsbanan för timpelarnas skuggpunkter, och den röda punkten följer samma bana kontinuerligt.</p>
+      <p class="footer">Beräkningsprincip: Meeus/NOAA-baserad solpositionsapproximation. För en höjd <em>H</em> och solhöjd <em>α</em> beräknas skuggförskjutningen som <em>H / tan(α)</em> i riktning bort från solen.</p>
+    </div>
+  </details>
+</main>
+
+<script>
+(function(){'use strict';
+const $=id=>document.getElementById(id), svg=$('plot'), NS='http://www.w3.org/2000/svg';
+const zodiacs=[['Vattumannen','01-20'],['Fiskarna','02-19'],['Väduren','03-21'],['Oxen','04-20'],['Tvillingarna','05-21'],['Kräftan','06-21'],['Lejonet','07-23'],['Jungfrun','08-23'],['Vågen','09-23'],['Skorpionen','10-23'],['Skytten','11-22'],['Stenbocken','12-21']];
+const year=2026,R=45,RIN=39.5,rSource=42.25,H=30,TOP=42,lat=56.0465,lon=12.6945,AZ0=-0.67;
+const rad=Math.PI/180, deg=180/Math.PI;
+const state={day:172,min:720,mode:'free',play:false,speed:1,preset:'',last:0,carry:0,timeSystem:'CET'};
+const start=Date.UTC(year,0,1), dayLength=365;
+const fmt=n=>String(n).padStart(2,'0');
+const dateOf=d=>new Date(start+(d-1)*86400000);
+const dayFromDate=s=>Math.max(1,Math.min(365,Math.floor((Date.parse(s+'T00:00:00Z')-start)/86400000)+1));
+const dateISO=d=>dateOf(d).toISOString().slice(0,10);
+const monthNames=['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
+const prettyDate=d=>{let dt=dateOf(d);return `${dt.getUTCDate()} ${monthNames[dt.getUTCMonth()]} ${year}`;};
+const timeString=m=>fmt(Math.floor(m/60))+':'+fmt(m%60);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const norm=a=>(a%360+360)%360;
+function solarCET(day,min){
+  const epoch=start+(day-1)*86400000+(min-60)*60000;
+  const date=new Date(epoch),jd=epoch/86400000+2440587.5,T=(jd-2451545)/36525;
+  let L0=norm(280.46646+T*(36000.76983+T*0.0003032));
+  let M=norm(357.52911+T*(35999.05029-0.0001537*T));
+  let e=0.016708634-T*(0.000042037+0.0000001267*T);
+  let C=Math.sin(M*rad)*(1.914602-T*(0.004817+0.000014*T))+Math.sin(2*M*rad)*(0.019993-0.000101*T)+Math.sin(3*M*rad)*0.000289;
+  let trueLong=L0+C,omega=125.04-1934.136*T,lambda=trueLong-0.00569-0.00478*Math.sin(omega*rad);
+  let eps0=23+(26+((21.448-T*(46.815+T*(0.00059-T*0.001813)))/60))/60;
+  let eps=eps0+0.00256*Math.cos(omega*rad);
+  let dec=Math.asin(Math.sin(eps*rad)*Math.sin(lambda*rad));
+  let y=Math.tan(eps*rad/2)**2;
+  let eq=4*deg*(y*Math.sin(2*L0*rad)-2*e*Math.sin(M*rad)+4*e*y*Math.sin(M*rad)*Math.cos(2*L0*rad)-0.5*y*y*Math.sin(4*L0*rad)-1.25*e*e*Math.sin(2*M*rad));
+  let utcMin=date.getUTCHours()*60+date.getUTCMinutes()+date.getUTCSeconds()/60;
+  let tst=((utcMin+eq+4*lon)%1440+1440)%1440;
+  let ha=(tst/4-180)*rad,p=lat*rad;
+  let sinAlt=Math.sin(p)*Math.sin(dec)+Math.cos(p)*Math.cos(dec)*Math.cos(ha);
+  let alt=Math.asin(clamp(sinAlt,-1,1))*deg;
+  let az=norm(Math.atan2(Math.sin(ha),Math.cos(ha)*Math.sin(p)-Math.tan(dec)*Math.cos(p))*deg+180);
+  return {az,alt,eq};
+}
+function solarAST(day,astMin){
+  let cetMin=astMin+60-4*lon;
+  for(let i=0;i<4;i++){
+    const s=solarCET(day,cetMin);
+    cetMin=astMin+60-4*lon-s.eq;
+  }
+  return {...solarCET(day,cetMin),cetMin};
+}
+function solar(day,min){return state.timeSystem==='AST'?solarAST(day,min):solarCET(day,min);}
+function correspondingOtherTime(day,min){
+  if(state.timeSystem==='CET'){
+    const s=solarCET(day,min);
+    let ast=min+s.eq+4*lon-60;
+    ast=((ast%1440)+1440)%1440;
+    return {label:'AST',min:Math.round(ast)};
+  }else{
+    const s=solarAST(day,min);
+    let cet=((s.cetMin%1440)+1440)%1440;
+    return {label:'CET',min:Math.round(cet)};
+  }
+}
+function shadow(day,min){let s=solar(day,min);if(s.alt<=0)return {...s,visible:false,dx:0,dy:0,d:Infinity};let d=H/Math.tan(s.alt*rad);return {...s,visible:true,d,dx:-d*Math.sin(s.az*rad),dy:-d*Math.cos(s.az*rad)};}
+function foot(hour){let a=(hour%24)*15*rad;return {x:rSource*Math.sin(a),y:rSource*Math.cos(a)};}
+function nearestPillar(){let h=Math.round(state.min/60);return h===0?24:h>24?24:h;}
+const view={cx:410,cy:430,scale:2.5};
+function X(x){return view.cx+x*view.scale;} function Y(y){return view.cy-y*view.scale;}
+function node(name,atts,parent=svg,content){let e=document.createElementNS(NS,name);for(let k in atts)e.setAttribute(k,atts[k]);if(content!==undefined)e.textContent=content;parent.appendChild(e);return e;}
+function line(x1,y1,x2,y2,attrs={},parent=svg){return node('line',{x1:X(x1),y1:Y(y1),x2:X(x2),y2:Y(y2),...attrs},parent);}
+function circle(x,y,r,attrs={},parent=svg){return node('circle',{cx:X(x),cy:Y(y),r:r*view.scale,...attrs},parent);}
+function text(x,y,value,attrs={},parent=svg){return node('text',{x:X(x),y:Y(y),...attrs},parent,value);}
+function polyPath(points,attrs={},parent=svg){if(points.length<2)return;let d=points.map((p,i)=>(i?'L':'M')+X(p.x).toFixed(2)+','+Y(p.y).toFixed(2)).join(' ');return node('path',{d,fill:'none',...attrs},parent);} 
+const palette={blue:'#246b9a',orange:'#d37525',gray:'#a4b3bc',red:'#bd3f42',teal:'#0a8a83',gold:'#d9a133'};
+function polar(a,r){let t=a*rad;return {x:r*Math.sin(t),y:r*Math.cos(t)};}
+function add(p,q){return {x:p.x+q.x,y:p.y+q.y};}
+function pillarPoly(h){const a=(h*15+AZ0)*rad,side={x:Math.cos(a)*.55,y:-Math.sin(a)*.55};const inside=polar(h*15+AZ0,RIN),outside=polar(h*15+AZ0,R);return [add(inside,{x:-side.x,y:-side.y}),add(inside,side),add(outside,side),add(outside,{x:-side.x,y:-side.y})];}
+function ringSector(a,b){return [polar(a,RIN),polar(b,RIN),polar(b,R),polar(a,R)];}
+function convexHull(pts){const p=[...pts].sort((a,b)=>a.x-b.x||a.y-b.y),cross=(o,a,b)=>(a.x-o.x)*(b.y-o.y)-(a.y-o.y)*(b.x-o.x);if(p.length<3)return p;const lo=[],hi=[];for(const a of p){while(lo.length>1&&cross(lo[lo.length-2],lo[lo.length-1],a)<=0)lo.pop();lo.push(a);}for(let i=p.length-1;i>=0;i--){const a=p[i];while(hi.length>1&&cross(hi[hi.length-2],hi[hi.length-1],a)<=0)hi.pop();hi.push(a);}lo.pop();hi.pop();return lo.concat(hi);} 
+function projectPoly(poly,sh,zLow,zHigh){const t1=zLow/H,t2=zHigh/H;return convexHull(poly.flatMap(p=>[{x:p.x+sh.dx*t1,y:p.y+sh.dy*t1},{x:p.x+sh.dx*t2,y:p.y+sh.dy*t2}]));}
+function filledPoly(points,attrs,parent=svg){return node('polygon',{points:points.map(p=>`${X(p.x).toFixed(2)},${Y(p.y).toFixed(2)}`).join(' '),...attrs},parent);} 
+const pillarShapes=Array.from({length:24},(_,i)=>pillarPoly(i+1));
+const ringShapes=Array.from({length:144},(_,i)=>ringSector(i*2.5,(i+1)*2.5));
+function annualPoints(min,pillar){let out=[];for(let day=1;day<=365;day+=2){let sh=shadow(day,min),f=foot(pillar);if(sh.alt>5 && sh.d<350)out.push({x:f.x+sh.dx,y:f.y+sh.dy});else if(out.length)out.push(null);}return out;}
+function pillarForHour(hour){const h=((hour%24)+24)%24;return h===0?24:h;}
+function hourlyPillarPoint(day,hour){const pillarHour=pillarForHour(hour);const sh=shadow(day,hour*60),f=foot(pillarHour);if(sh.alt<=5 || sh.d>=350)return null;return {x:f.x+sh.dx,y:f.y+sh.dy};}
+function dailyPoints(day){const out=[];for(let hour=0;hour<=24;hour++)out.push(hourlyPillarPoint(day,hour));return out;}
+function dailyMarker(day,min){const t=min/60;if(t<0 || t>=24)return null;const h=Math.floor(t),frac=t-h;const a=hourlyPillarPoint(day,h),b=hourlyPillarPoint(day,h+1);if(!a||!b)return null;return {x:a.x+(b.x-a.x)*frac,y:a.y+(b.y-a.y)*frac};}
+function segmented(points,attrs,parent){let part=[];for(let p of [...points,null]){if(p){part.push(p)}else{polyPath(part,attrs,parent);part=[];}}}
+function setTimeSystem(ts){state.timeSystem=ts;stop();}
+function updateTimeToggle(){ $('btnCET').classList.toggle('active',state.timeSystem==='CET'); $('btnAST').classList.toggle('active',state.timeSystem==='AST'); $('btnCET').setAttribute('aria-pressed',String(state.timeSystem==='CET')); $('btnAST').setAttribute('aria-pressed',String(state.timeSystem==='AST')); }
+function render(){
+  $('dateRange').value=state.day;$('dateInput').value=dateISO(state.day);$('dateText').textContent=prettyDate(state.day);
+  $('timeRange').value=state.min;$('timeText').textContent=timeString(state.min);$('mode').value=state.mode; updateTimeToggle();
+  const ts=state.timeSystem; $('timeLabel').textContent=`Klockslag (${ts})`; $('plotTitle').textContent=`${prettyDate(state.day)} · kl. ${timeString(state.min)} ${ts}`;
+  const other=correspondingOtherTime(state.day,state.min); $('timeSub').textContent=`Motsvarar ${timeString(other.min)} ${other.label}`;
+  $('plotSub').textContent=ts==='AST'?'Skala i meter · norr uppåt · sann soltid':'Skala i meter · norr uppåt · svensk normaltid (CET)';
+  let currentDate=dateISO(state.day).slice(5),which=zodiacs.find(x=>x[1]===currentDate); $('zodiac').textContent=which?which[0]+' · stjärntecknets startdatum':'Dag '+state.day+' av 365';
+  let sh=shadow(state.day,state.min),pillar=nearestPillar();
+  $('azStat').textContent=sh.az.toFixed(1).replace('.',',')+'°'; $('altStat').textContent=sh.alt.toFixed(1).replace('.',',')+'°'; $('lenStat').textContent=sh.visible?sh.d.toFixed(1).replace('.',',')+' m':'—'; $('pillarStat').textContent=pillar;
+  let daystatus=$('daylight');daystatus.textContent=sh.visible?'Solen över horisonten':'Solen under horisonten';daystatus.className='pill'+(sh.visible?'':' night');
+  $('play').textContent=state.play?'Ⅱ Pausa':'▶ Spela';
+  $('playHint').textContent=state.preset==='zodiac'?`Spelar de 12 stjärntecknens startdatum vid kl. 12 ${ts}.`:state.preset==='solstice'?`Spelar 21 juni från kl. 06 till 18 ${ts}.`:state.mode==='year'?'Datum ändras, tiden är fast.':state.mode==='day'?'Tiden ändras, datumet är fast.':'Fritt läge: spelar tiden framåt, minut för minut.';
+  svg.replaceChildren();
+  let defs=node('defs',{});let marker=node('marker',{id:'arrowhead',markerWidth:7,markerHeight:7,refX:6,refY:3.5,orient:'auto'},defs);node('path',{d:'M0,0 L7,3.5 L0,7 Z',fill:palette.gold},marker);
+  for(let v=-200;v<=200;v+=20){let major=v===0;line(v,-150,v,150,{stroke:major?'#c4d2da':'#ecf1f4','stroke-width':major?1.3:.8});line(-180,v,180,v,{stroke:major?'#c4d2da':'#ecf1f4','stroke-width':major?1.3:.8});}
+  line(-140,-89,-120,-89,{stroke:'#334c5d','stroke-width':2});line(-140,-91,-140,-87,{stroke:'#334c5d','stroke-width':2});line(-120,-91,-120,-87,{stroke:'#334c5d','stroke-width':2});text(-130,-94,'20 m',{'font-size':12,'text-anchor':'middle',fill:'#546e7f'});
+  text(-148,145,'N',{'text-anchor':'middle','font-weight':700,'font-size':17,fill:'#243d4d'}); line(-148,135,-148,141,{stroke:'#293f4d','stroke-width':2}); node('path',{d:`M ${X(-148)-5},${Y(141)+7} L ${X(-148)},${Y(146)} L ${X(-148)+5},${Y(141)+7}`,fill:'none',stroke:'#293f4d','stroke-width':2});
+  const defsClip=node('clipPath',{id:'shadow-clip'},defs); node('rect',{x:3,y:3,width:814,height:694},defsClip); const shadowLayer=node('g',{'clip-path':'url(#shadow-clip)'});
+  if(sh.visible){ if($('showRing').checked){for(const q of ringShapes) filledPoly(projectPoly(q,sh,H,TOP),{fill:'#c0c6cc',opacity:.88},shadowLayer);} if($('showPillars').checked){for(const q of pillarShapes) filledPoly(projectPoly(q,sh,0,H),{fill:'#aeb7c1',opacity:.89},shadowLayer);} }
+  for(const q of ringShapes)filledPoly(q,{fill:'#e8ecef',stroke:'#b8c2cb','stroke-width':.20},svg); for(const q of pillarShapes)filledPoly(q,{fill:'#dbe1e5',stroke:'#607487','stroke-width':.65},svg);
+  let p8=pillarShapes[7],c8={x:p8.reduce((v,p)=>v+p.x,0)/4,y:p8.reduce((v,p)=>v+p.y,0)/4}; circle(c8.x,c8.y,2.5,{fill:'#bbc3ca',stroke:'#738597','stroke-width':.8}); filledPoly(p8,{fill:'#dbe1e5',stroke:'#607487','stroke-width':.8});
+  for(let h=1;h<=24;h++){let a=(h*15+AZ0)*rad; text(55*Math.sin(a),55*Math.cos(a)+1.3,''+h,{'text-anchor':'middle','font-size':12,'dominant-baseline':'middle',fill:h===pillar?palette.red:'#405b6c','font-weight':h===pillar?700:400});}
+  if($('showDay').checked){const curveLayer=node('g',{'clip-path':'url(#shadow-clip)'});segmented(dailyPoints(state.day),{stroke:palette.teal,'stroke-width':2.6,opacity:.9},curveLayer);} 
+  if($('showYear').checked){segmented(annualPoints(state.min,pillar),{stroke:'#7844a1','stroke-width':2.8,opacity:.85},svg); for(let [name,md] of zodiacs){let day=dayFromDate(`${year}-${md}`),s=shadow(day,state.min);if(s.alt>5&&s.d<350){let f=foot(pillar);circle(f.x+s.dx,f.y+s.dy,1.2,{fill:'#7844a1',stroke:'white','stroke-width':1});}}}
+  if(sh.visible&&$('showCurrent').checked){let q=pillarShapes[pillar-1];filledPoly(projectPoly(q,sh,0,H),{fill:palette.red,opacity:.53,stroke:'#aa3136','stroke-width':1.5},shadowLayer);let f=foot(pillar);line(f.x,f.y,f.x+sh.dx,f.y+sh.dy,{stroke:palette.red,'stroke-width':1.8,'stroke-dasharray':'5 4',opacity:.85});circle(f.x,f.y,1.5,{fill:palette.red,stroke:'white','stroke-width':1});}
+  const ringPoint=dailyMarker(state.day,state.min); if(ringPoint && $('showRingPoint').checked){const layer=node('g',{'clip-path':'url(#shadow-clip)'});circle(ringPoint.x,ringPoint.y,2.6,{fill:'#e11d36',stroke:'#fff','stroke-width':2.4},layer);} 
+  if(sh.visible&&$('showSun').checked){let a=sh.az*rad, x=30*Math.sin(a),y=30*Math.cos(a);line(0,0,x,y,{stroke:palette.gold,'stroke-width':3,'marker-end':'url(#arrowhead)'});} circle(0,0,.7,{fill:'#203c4c'});
+  $('status').textContent=sh.visible?`Skuggförskjutning: ${(sh.dx).toFixed(1).replace('.',',')} m österut, ${(sh.dy).toFixed(1).replace('.',',')} m norrut.`:'Ingen geometrisk markskugga ritas när solen ligger under horisonten.';
+}
+function stop(){state.play=false;state.last=0;state.carry=0;render();}
+function setDate(d){state.day=clamp(d,1,365);if(state.preset==='zodiac')state.preset='';stop();}
+function setTime(m){state.min=clamp(m,0,1439);if(state.preset==='solstice')state.preset='';stop();}
+$('dateRange').addEventListener('input',e=>setDate(Number(e.target.value)));
+$('dateInput').addEventListener('change',e=>{if(e.target.value.startsWith(year+'-'))setDate(dayFromDate(e.target.value));else render();});
+$('timeRange').addEventListener('input',e=>setTime(Number(e.target.value)));
+$('mode').addEventListener('change',e=>{state.mode=e.target.value;state.preset='';stop();});
+$('speed').addEventListener('change',e=>{state.speed=Number(e.target.value);});
+$('btnCET').addEventListener('click',()=>setTimeSystem('CET')); $('btnAST').addEventListener('click',()=>setTimeSystem('AST'));
+for(let id of ['showPillars','showRing','showDay','showYear','showCurrent','showSun','showRingPoint'])$(id).addEventListener('change',render);
+const zodiacDays=zodiacs.map(z=>dayFromDate(`${year}-${z[1]}`));
+function step(direction){if(state.preset==='zodiac'){let idx=zodiacDays.indexOf(state.day);if(idx<0)idx=0;state.day=zodiacDays[(idx+direction+12)%12];} else if(state.mode==='year'){state.day=((state.day-1+direction+365)%365)+1;} else if(state.preset==='solstice'){state.min=clamp(state.min+direction*60,360,1080);} else {state.min=((state.min+direction*60)%1440+1440)%1440;} render();}
+$('prev').addEventListener('click',()=>{stop();step(-1);}); $('next').addEventListener('click',()=>{stop();step(1);});
+$('presetDay').addEventListener('click',()=>{state.day=dayFromDate('2026-06-21');state.min=360;state.mode='day';state.preset='solstice';stop();});
+$('presetZodiac').addEventListener('click',()=>{state.day=zodiacDays[0];state.min=720;state.mode='year';state.preset='zodiac';$('showYear').checked=true;stop();});
+$('play').addEventListener('click',()=>{state.play=!state.play;state.last=0;state.carry=0;render();if(state.play)requestAnimationFrame(tick);});
+function tick(ts){if(!state.play)return;if(!state.last)state.last=ts;let elapsed=Math.min(100,ts-state.last);state.last=ts; let msPerStep=state.preset==='zodiac'?950:state.mode==='year'?90:35; state.carry+=elapsed*state.speed; let n=Math.floor(state.carry/msPerStep); state.carry-=n*msPerStep; if(n){n=Math.min(n,50); for(let j=0;j<n;j++){ if(state.preset==='zodiac'){let idx=zodiacDays.indexOf(state.day);state.day=zodiacDays[(idx+1)%12];} else if(state.mode==='year'){state.day=state.day%365+1;} else if(state.preset==='solstice'){state.min+=1;if(state.min>1080)state.min=360;} else{state.min=(state.min+1)%1440;} } render();} requestAnimationFrame(tick);}
+render();
+window.filbornaModel={solarCET,solarAST,shadow,state};
+})();
+</script>
+</body>
+</html>
