@@ -1,8 +1,9 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="sv">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
 <title>Filborna solur – responsiv CET/AST-modell</title>
 <style>
 :root{color-scheme:light;--ink:#1e3444;--muted:#607587;--line:#dce6eb;--blue:#246b9a;--orange:#d37525;--red:#bd3f42;--teal:#0a8a83;--gold:#d9a133;--paper:#f5f8fa;--panel:#fff;--soft:#f3f7f9}
@@ -107,119 +108,164 @@ details[open]>summary{border-bottom:1px solid var(--line);background:#fafcfd}
  .controls-panel .play-row select{padding:4px 6px;font-size:12px}
  .settings-row{grid-template-columns:1fr}
 }
+
+/* Gemensamt Filborna-gränssnitt */
+:root{--ink:#1e3444;--muted:#607587;--line:#dce6eb;--paper:#f5f8fa;--panel:#fff;--accent:#116b84;color:var(--ink);background:var(--paper);font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+body{margin:0;padding:0;background:var(--paper);color:var(--ink);font:15px/1.45 system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+header,.top{background:#12384e;color:white;margin:0;padding:12px clamp(10px,2vw,24px)}
+header h1,.top h1{font-size:clamp(18px,2.4vw,27px);line-height:1.2;letter-spacing:-.02em;margin:0 0 3px;font-weight:700}
+header p,.subtitle{color:#d3e2e9;font-size:12px;margin:0}
+.panel{background:white;border:1px solid var(--line);border-radius:12px;box-shadow:0 3px 14px #193c5210;margin:0;min-width:0}
+button{border:1px solid #cad9df;border-radius:8px;background:white;color:var(--ink);padding:7px 10px;font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+button.primary,.toggle button.active{background:var(--accent);color:white;border-color:var(--accent)}
+input[type=range]{width:100%;height:28px;min-height:28px;margin:0;accent-color:var(--accent);touch-action:pan-y;cursor:pointer}
+input[type=checkbox],input[type=radio]{accent-color:var(--accent)}
+.control-heading,.control-label{display:flex;align-items:baseline;justify-content:space-between;gap:5px;flex-wrap:wrap;margin:0}
+.control-heading label,.control-label strong{font-size:13px;font-weight:650}
+.hero-value,.control-label output{font-size:17px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.range-labels,.ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.subvalue,.time-conversion{color:var(--muted);font-size:12px;margin:0}
+.toggle,.time-mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:3px;background:#edf4f7;border:1px solid #c8d8df;border-radius:9px;padding:3px;margin:5px 0;max-width:none}
+.toggle button,.time-mode-switch label{position:relative;text-align:center;display:block;border:0;padding:6px;border-radius:6px;font-size:13px;font-weight:650;cursor:pointer;color:var(--ink);background:transparent}
+.toggle button.active,.time-mode-switch label:has(input:checked){color:white;background:var(--accent)}
+.time-mode-switch input{position:absolute;opacity:0;width:1px;height:1px}.time-mode-switch label:focus-within{outline:2px solid #83bfd7}
+summary{cursor:pointer;font-weight:650;font-size:13px;padding:7px 0}
+.stat,.metric{background:#f6f9fa;border:1px solid #e8edf0;border-radius:8px;padding:7px 9px;min-width:0}
+.stat-value,.metric b{font-size:17px;font-weight:700}.stat-label,.metric small{font-size:11px;color:var(--muted)}
+@media (orientation:landscape) and (min-width:500px) and (max-height:650px){header,.top{padding:6px 10px}header h1,.top h1{font-size:17px}header p,.subtitle{display:none}.panel{border-radius:8px}.hero-value,.control-label output{font-size:14px}.control-heading label,.control-label strong{font-size:12px}.range-labels,.ticks{font-size:10px}.subvalue,.time-conversion{font-size:11px}input[type=range]{height:25px;min-height:25px}button{font-size:11px;padding:5px 7px}}
+
+main{max-width:1600px;padding:10px;display:flex;flex-direction:column;gap:8px}.plot-panel{order:0}.controls-panel{order:1;padding:10px}.wide{order:2}.controls-panel .toggle{width:100%}.controls-panel .play-row{display:flex;flex-wrap:wrap;gap:5px;justify-content:stretch}.controls-panel .play-row .play{flex:1;min-width:75px}.canvas{width:100%;height:auto;max-height:none;aspect-ratio:820/700}.controls-panel .subvalue{display:block}.controls-panel #zodiac{display:none}.plot-panel .stats{display:grid}.plot-panel .legend{display:flex}.plot-panel .note{display:block}
+@media (min-width:900px), (orientation:landscape) and (min-width:500px) and (max-height:650px){main{display:grid;grid-template-columns:minmax(210px, min(30%,320px)) minmax(0,1fr);grid-template-rows:auto auto 1fr;align-items:start;gap:8px}.controls-panel{grid-column:1;grid-row:1;position:sticky!important;top:8px}.plot-panel{grid-column:2;grid-row:1/4;position:sticky;top:8px}.wide{grid-column:1}.canvas{height:auto;max-height:calc(100dvh - 110px)} }
+@media (orientation:landscape) and (min-width:500px) and (max-height:650px){main{padding:5px;gap:5px}.controls-panel{padding:7px;gap:5px}.control{gap:2px}.plot-panel{padding:5px}.topbar{padding:2px 2px 5px}.topbar strong{font-size:12px}.topbar small,.pill,.plot-panel .legend,.plot-panel .note{display:none}.plot-panel .stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:3px;margin-top:4px}.stat{padding:3px}.stat-label{font-size:9px}.stat-value{font-size:12px}.canvas{max-height:calc(100dvh - 95px)}details>summary{padding:8px}.details-body{padding:8px}}
+
+/* Slutlig samordning av snabbreglage */
+@media (min-width:900px), (orientation:landscape) and (min-width:500px){
+ .controls-panel .control{gap:3px}
+ #fullscreen-stage:not(:fullscreen)>.panel:nth-of-type(1){padding-bottom:4px;border-bottom:0;border-bottom-left-radius:0;border-bottom-right-radius:0}
+ #fullscreen-stage:not(:fullscreen)>.panel:nth-of-type(2){margin-top:-8px;padding-top:7px;border-top:0;border-top-left-radius:0;border-top-right-radius:0}
+}
+#star-play{width:100%;margin-top:7px}
+.quick-extra{border-top:1px solid var(--line);margin-top:7px}
+@media (orientation:landscape) and (max-height:650px){
+ #fullscreen-stage:not(:fullscreen)>.panel:nth-of-type(2){margin-top:-5px}
+ #fullscreen-stage .twilight-indicator{margin:3px 0;font-size:11px}
+ #fullscreen-stage .chart-toolbar{margin:2px 0 4px}
+ #fullscreen-stage .chart-scroll:not(.zoomed) .plot,#fullscreen-stage #circular-container:not(.zoomed) .plot{max-height:calc(100dvh - 105px)}
+}
+
+.controls-panel .quick-grid{display:block}.controls-panel .toggle{margin:5px 0}.controls-panel .control{min-width:0}
+
+main:fullscreen, main.fullscreen-fallback{background:var(--paper);width:100%;max-width:none;height:100%;overflow:auto;margin:0;padding:8px;box-sizing:border-box}
+main.fullscreen-fallback{position:fixed;inset:0;z-index:9999;height:100dvh}
+main:fullscreen .canvas,main.fullscreen-fallback .canvas{max-height:calc(100dvh - 85px)}
+@media (min-width:900px), (orientation:landscape) and (min-width:500px){main:fullscreen,main.fullscreen-fallback{display:grid;grid-template-columns:minmax(210px,min(30%,320px)) minmax(0,1fr);grid-template-rows:auto auto 1fr;align-items:start}main:fullscreen .controls-panel,main.fullscreen-fallback .controls-panel{top:0}main:fullscreen .plot-panel,main.fullscreen-fallback .plot-panel{top:0}}
 </style>
-</head>
 <body>
 <header>
-  <h1>Filborna solur <span style="font-weight:400">/ interaktiv skuggmodell</span></h1>
-  <p>Interaktiv års- och dygnsmodell · CET och sann soltid (AST)</p>
+<h1>Filborna solur – Skuggmodell</h1>
+<p>Interaktiv års- och dygnsmodell · 2026 · CET / AST</p>
 </header>
 <main>
-  <section class="panel plot-panel">
-    <div class="topbar">
-      <div>
-        <strong id="plotTitle">21 juni 2026 · kl. 12:00 CET</strong>
-        <small id="plotSub">Skala i meter · norr uppåt · ingen perspektivförminskning</small>
-      </div>
-      <div class="plot-actions">
-        <div class="toggle" role="group" aria-label="Välj tidssystem">
-          <button type="button" id="btnCET" class="active" aria-pressed="true">CET</button>
-          <button type="button" id="btnAST" aria-pressed="false">AST</button>
-        </div>
-        <span class="pill" id="daylight">Solen över horisonten</span>
-      </div>
-    </div>
-    <svg id="plot" class="canvas" viewBox="0 0 820 700" role="img" aria-label="Ortografisk planritning av vattentornets ring och beräknade skuggor"></svg>
-    <div class="stats">
-      <div class="stat"><div class="stat-label">Solazimut</div><div id="azStat" class="stat-value">—</div></div>
-      <div class="stat"><div class="stat-label">Solhöjd</div><div id="altStat" class="stat-value">—</div></div>
-      <div class="stat"><div class="stat-label">Skuggförskjutning</div><div id="lenStat" class="stat-value">—</div></div>
-      <div class="stat"><div class="stat-label">Vald timpelare</div><div id="pillarStat" class="stat-value">12</div></div>
-    </div>
-    <div class="legend">
-      <span><i class="swatch" style="background:#246b9a"></i>Tornets ring</span>
-      <span><i class="swatch" style="background:#d37525"></i>Ringens skugga</span>
-      <span><i class="swatch" style="background:#a4b3bc"></i>Pelarskuggor</span>
-      <span><i class="swatch" style="background:#bd3f42"></i>Vald pelare/skugga</span>
-      <span><i class="swatch" style="background:#0a8a83"></i>Dagens kurva</span>
-      <span><i class="dot" style="background:#e11d36"></i>Röd punkt</span>
-    </div>
-    <div id="status" class="note"></div>
-  </section>
-
-  <section class="panel controls-panel" aria-label="Snabbreglage">
-    <div class="control">
-      <div class="quick-grid">
-        <div>
-          <div class="control-heading"><label for="dateRange">Datum</label><span id="dateText" class="hero-value">21 juni 2026</span></div>
-          <div id="zodiac" class="subvalue">Kräftan · stjärntecknets startdatum</div>
-        </div>
-
-      </div>
-      <input type="range" id="dateRange" min="1" max="365" step="1" value="172" aria-label="Dag på året">
-      <div class="range-labels"><span>1 jan</span><span>31 dec</span></div>
-    </div>
-
-    <div class="control">
-      <div class="control-heading"><label for="timeRange" id="timeLabel">Klockslag (CET)</label><span id="timeText" class="hero-value">12:00</span></div>
-      <span id="timeSub" class="subvalue compact">Motsvarar 11:52 AST</span>
-      <input id="timeRange" type="range" min="0" max="1439" step="1" value="720" aria-label="Tid på dygnet">
-      <div class="range-labels"><span>00:00</span><span>12:00</span><span>23:59</span></div>
-    </div>
-
-    <div class="control">
-      <div class="play-row">
-        <button id="prev" title="Ett steg bakåt" aria-label="Steg bakåt">◀</button>
-        <button id="play" class="primary play">▶ Spela</button>
-        <button id="next" title="Ett steg framåt" aria-label="Steg framåt">▶</button>
-        <select id="speed" aria-label="Uppspelningshastighet" style="width:auto"><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
-      </div>
-
-    </div>
-  </section>
-
-  <details class="panel wide">
-    <summary>Fler inställningar</summary>
-    <div class="details-body">
-      <div class="subvalue" id="playHint" style="margin-bottom:12px">Fritt läge: spelar tiden framåt, minut för minut.</div>
-      <div class="settings-row">
-        <div class="control"><label for="mode">Uppspelningsläge</label><select id="mode"><option value="free">Fritt – ändra datum och tid</option><option value="day">Spela dagen</option><option value="year">Spela året</option></select></div>
-        <div class="control"><label for="dateInput">Välj datum direkt</label><input id="dateInput" type="date" min="2026-01-01" max="2026-12-31" value="2026-06-21"></div>
-      </div>
-      <div class="control" style="margin-bottom:14px">
-        <div class="control-title">Snabbval</div>
-        <div class="flex"><button id="presetDay">21 juni · kl 06–18</button><button id="presetZodiac">12 stjärntecken · kl 12</button></div>
-      </div>
-      <div class="control" style="margin-bottom:0">
-        <div class="control-title">Visa på ritningen</div>
-        <div class="checkgrid">
-          <label><input id="showPillars" type="checkbox" checked>24 pelarskuggor</label>
-          <label><input id="showRing" type="checkbox" checked>Ringens skugga</label>
-          <label><input id="showDay" type="checkbox" checked>Dagens kurva</label>
-          <label><input id="showYear" type="checkbox">Årsanalemma</label>
-          <label><input id="showCurrent" type="checkbox" checked>Markerad pelare</label>
-          <label><input id="showRingPoint" type="checkbox" checked>Röd punkt på kurvan</label>
-          <label><input id="showSun" type="checkbox" checked>Solriktning</label>
-        </div>
-      </div>
-    </div>
-  </details>
-
-  <details class="panel wide">
-    <summary>Förklaring och modellantaganden</summary>
-    <div class="details-body">
-      <p class="small">Ytterradius: 45 m · innerradius: 39,5 m · pelare: 1,10 m breda och 5,50 m djupa. Pelarskugga projiceras från marknivå till 30 m höjd. Ringens skugga projiceras mellan 30 och 42 m höjd. Marken antas horisontell och vyn är en parallellprojektion ovanifrån.</p>
-      <p class="small">I <strong>CET</strong> används svensk normaltid året runt (UTC+1). I <strong>AST</strong> används sann soltid, där kl. 12:00 motsvarar solens meridianpassage. Den gröna kurvan visar heldygnsbanan för timpelarnas skuggpunkter, och den röda punkten följer samma bana kontinuerligt.</p>
-      <p class="footer">Beräkningsprincip: Meeus/NOAA-baserad solpositionsapproximation. För en höjd <em>H</em> och solhöjd <em>α</em> beräknas skuggförskjutningen som <em>H / tan(α)</em> i riktning bort från solen.</p>
-    </div>
-  </details>
+<section class="panel plot-panel">
+<div class="topbar">
+<div>
+<strong id="plotTitle">21 juni 2026 · kl. 12:00 CET</strong>
+<small id="plotSub">Skala i meter · norr uppåt · ingen perspektivförminskning</small>
+</div>
+<div class="plot-actions">
+<button type="button" id="fullscreen-shadow">Fullskärm</button><span class="pill" id="daylight">Solen över horisonten</span>
+</div>
+</div>
+<svg aria-label="Ortografisk planritning av vattentornets ring och beräknade skuggor" class="canvas" id="plot" role="img" viewbox="0 0 820 700"></svg>
+<div class="stats">
+<div class="stat"><div class="stat-label">Solazimut</div><div class="stat-value" id="azStat">—</div></div>
+<div class="stat"><div class="stat-label">Solhöjd</div><div class="stat-value" id="altStat">—</div></div>
+<div class="stat"><div class="stat-label">Skuggförskjutning</div><div class="stat-value" id="lenStat">—</div></div>
+<div class="stat"><div class="stat-label">Vald timpelare</div><div class="stat-value" id="pillarStat">12</div></div>
+</div>
+<div class="legend">
+<span><i class="swatch" style="background:#246b9a"></i>Tornets ring</span>
+<span><i class="swatch" style="background:#d37525"></i>Ringens skugga</span>
+<span><i class="swatch" style="background:#a4b3bc"></i>Pelarskuggor</span>
+<span><i class="swatch" style="background:#bd3f42"></i>Vald pelare/skugga</span>
+<span><i class="swatch" style="background:#0a8a83"></i>Dagens kurva</span>
+<span><i class="dot" style="background:#e11d36"></i>Röd punkt</span>
+</div>
+<div class="note" id="status"></div>
+</section>
+<section aria-label="Snabbreglage" class="panel controls-panel">
+<div class="control">
+<div class="quick-grid">
+<div>
+<div class="control-heading"><label for="dateRange">Datum</label><span class="hero-value" id="dateText">21 juni 2026</span></div>
+<div class="subvalue" id="zodiac">Kräftan · stjärntecknets startdatum</div>
+</div>
+</div>
+<input aria-label="Dag på året" id="dateRange" max="365" min="1" step="1" type="range" value="172"/>
+<div class="range-labels"><span>1 jan</span><span>31 dec</span></div>
+</div>
+<div class="control">
+<div class="control-heading"><label for="timeRange" id="timeLabel">Klockslag (CET)</label><span class="hero-value" id="timeText">12:00</span></div>
+<input aria-label="Tid på dygnet" id="timeRange" max="1439" min="0" step="1" type="range" value="720"/>
+<div class="range-labels"><span>00:00</span><span>12:00</span><span>23:59</span></div>
+<div aria-label="Välj tidssystem" class="toggle" role="group">
+<button aria-pressed="true" class="active" id="btnCET" type="button">CET</button>
+<button aria-pressed="false" id="btnAST" type="button">AST</button>
+</div><span class="subvalue compact" id="timeSub">Motsvarar 11:52 AST</span></div>
+<div class="control">
+<div class="play-row">
+<button aria-label="Steg bakåt" id="prev" title="Ett steg bakåt">◀</button>
+<button class="primary play" id="play">▶ Spela</button>
+<button aria-label="Steg framåt" id="next" title="Ett steg framåt">▶</button>
+<select aria-label="Uppspelningshastighet" id="speed" style="width:auto"><option value="0.5">0,5×</option><option selected="" value="1">1×</option><option value="2">2×</option><option value="4">4×</option></select>
+</div>
+</div>
+</section>
+<details class="panel wide">
+<summary>Fler inställningar</summary>
+<div class="details-body">
+<div class="subvalue" id="playHint" style="margin-bottom:12px">Fritt läge: spelar tiden framåt, minut för minut.</div>
+<div class="settings-row">
+<div class="control"><label for="mode">Uppspelningsläge</label><select id="mode"><option value="free">Fritt – ändra datum och tid</option><option value="day">Spela dagen</option><option value="year">Spela året</option></select></div>
+<div class="control"><label for="dateInput">Välj datum direkt</label><input id="dateInput" max="2026-12-31" min="2026-01-01" type="date" value="2026-06-21"/></div>
+</div>
+<div class="control" style="margin-bottom:14px">
+<div class="control-title">Snabbval</div>
+<div class="flex"><button id="presetDay">21 juni · kl 06–18</button><button id="presetZodiac">12 stjärntecken · kl 12</button></div>
+</div>
+<div class="control" style="margin-bottom:0">
+<div class="control-title">Visa på ritningen</div>
+<div class="checkgrid">
+<label><input checked="" id="showPillars" type="checkbox"/>24 pelarskuggor</label>
+<label><input checked="" id="showRing" type="checkbox"/>Ringens skugga</label>
+<label><input checked="" id="showDay" type="checkbox"/>Dagens kurva</label>
+<label><input id="showYear" type="checkbox"/>Årsanalemma</label>
+<label><input checked="" id="showCurrent" type="checkbox"/>Markerad pelare</label>
+<label><input checked="" id="showRingPoint" type="checkbox"/>Röd punkt på kurvan</label>
+<label><input checked="" id="showSun" type="checkbox"/>Solriktning</label>
+</div>
+</div>
+</div>
+</details>
+<details class="panel wide">
+<summary>Förklaring och modellantaganden</summary>
+<div class="details-body">
+<p class="small">Ytterradius: 45 m · innerradius: 39,5 m · pelare: 1,10 m breda och 5,50 m djupa. Pelarskugga projiceras från marknivå till 30 m höjd. Ringens skugga projiceras mellan 30 och 42 m höjd. Marken antas horisontell och vyn är en parallellprojektion ovanifrån.</p>
+<p class="small">I <strong>CET</strong> används svensk normaltid året runt (UTC+1). I <strong>AST</strong> används sann soltid, där kl. 12:00 motsvarar solens meridianpassage. Den gröna kurvan visar heldygnsbanan för timpelarnas skuggpunkter, och den röda punkten följer samma bana kontinuerligt.</p>
+<p class="footer">Beräkningsprincip: Meeus/NOAA-baserad solpositionsapproximation. För en höjd <em>H</em> och solhöjd <em>α</em> beräknas skuggförskjutningen som <em>H / tan(α)</em> i riktning bort från solen.</p>
+</div>
+</details>
 </main>
-
 <script>
+(()=>{const stage=document.querySelector('main'),btn=document.getElementById('fullscreen-shadow');
+const update=()=>{const active=document.fullscreenElement===stage||stage.classList.contains('fullscreen-fallback');btn.textContent=active?'Avsluta fullskärm':'Fullskärm';btn.setAttribute('aria-pressed',String(active));};
+btn.addEventListener('click',async()=>{if(document.fullscreenElement===stage){await document.exitFullscreen();}else if(stage.classList.contains('fullscreen-fallback')){stage.classList.remove('fullscreen-fallback');}else{try{if(!stage.requestFullscreen)throw Error('unsupported');await stage.requestFullscreen();}catch(e){stage.classList.add('fullscreen-fallback');}}update();});
+document.addEventListener('fullscreenchange',update);document.addEventListener('keydown',e=>{if(e.key==='Escape'){stage.classList.remove('fullscreen-fallback');update();}});update();})();
+</script></body><script>
 (function(){'use strict';
 const $=id=>document.getElementById(id), svg=$('plot'), NS='http://www.w3.org/2000/svg';
 const zodiacs=[['Vattumannen','01-20'],['Fiskarna','02-19'],['Väduren','03-21'],['Oxen','04-20'],['Tvillingarna','05-21'],['Kräftan','06-21'],['Lejonet','07-23'],['Jungfrun','08-23'],['Vågen','09-23'],['Skorpionen','10-23'],['Skytten','11-22'],['Stenbocken','12-21']];
-const year=2026,R=45,RIN=39.5,rSource=42.25,H=30,TOP=42,lat=56.0465,lon=12.6945,AZ0=-0.67;
+const year=2026,R=45,RIN=39.5,rSource=42.25,H=30,TOP=42,lat=56.053322,lon=12.753456,AZ0=-0.67;
 const rad=Math.PI/180, deg=180/Math.PI;
 const state={day:172,min:720,mode:'free',play:false,speed:1,preset:'',last:0,carry:0,timeSystem:'CET'};
 const start=Date.UTC(year,0,1), dayLength=365;
@@ -352,5 +398,5 @@ render();
 window.filbornaModel={solarCET,solarAST,shadow,state};
 })();
 </script>
-</body>
-</html>
+
+</head></html>
